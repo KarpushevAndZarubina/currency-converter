@@ -4,10 +4,10 @@ import org.jsoup.Jsoup;
 
 public class Dollar {
     public static double getDollarsValue() {
-        return DollarsValue;
+        return dollarsValue;
     }
 
-    private static double DollarsValue;
+    private static double dollarsValue;
     public static void parseDollarValue() {
         double dblValueDollar = 0;
         try {
@@ -19,6 +19,6 @@ public class Dollar {
             System.err.println("Произошла ошибка." +
                     "\nНазвание ошибки: " + e.getMessage());
         }
-        DollarsValue = dblValueDollar;
+        dollarsValue = dblValueDollar;
     }
     }

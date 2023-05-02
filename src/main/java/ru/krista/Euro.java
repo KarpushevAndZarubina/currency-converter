@@ -4,10 +4,10 @@ import org.jsoup.Jsoup;
 
 public class Euro {
 
-    private static double EuroValue;
+    private static double euroValue;
 
     public static double getEuroValue() {
-        return EuroValue;
+        return euroValue;
     }
 
     public static void parseEuroValue() {
@@ -21,6 +21,6 @@ public class Euro {
             System.err.println("Произошла ошибка." +
                     "\nНазвание ошибки: " + e.getMessage());
         }
-        EuroValue = dblValueEuro;
+        euroValue = dblValueEuro;
     }
 }

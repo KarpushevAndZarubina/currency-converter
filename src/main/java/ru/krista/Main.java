@@ -19,12 +19,12 @@ public class Main {
 
         Byte number;
 
-        double Sum = 0.0;
+        double sum = 0.0;
 
-        double Result;
+        double result;
 
         while (true) {
-            Result = 0;
+            result = 0;
 
             System.out.println("""
                                     
@@ -49,37 +49,36 @@ public class Main {
             if (number != 5) {
                 System.out.println("\nEnter the amount to transfer( 0 - finish the program): ");
                 try {
-                    Sum = scanner.nextDouble();
+                    sum = scanner.nextDouble();
                 } catch (Exception e) {
                     System.out.println("Mistake!!! The requested data was probably entered!!! Sum assigned the value 0");
-                    Sum = 0;
+                    sum = 0;
                 }
 
-                if (Sum == 0) {
+                if (sum == 0) {
                     break;
                 }
             }
             String forFavorite = "";
 
             switch (number) {
-                case (1):
-                    Result = Sum / Double.parseDouble(ValueDollarForCalculate);
-                    forFavorite = number + "rub = " + Result + "$";
-
-                    break;
-                case (2):
-                    Result = Double.parseDouble(ValueDollarForCalculate) * Sum;
-                    forFavorite = number + "$ = " + Result + "rub";
-                    break;
-                case (3):
-                    Result = Sum / Double.parseDouble(ValueEuroForCalculate);
-                    forFavorite = number + "rub = " + Result + "euro";
-                    break;
-                case (4):
-                    Result = Double.parseDouble(ValueEuroForCalculate) * Sum;
-                    forFavorite = number + "euro = " + Result + "rub";
-                    break;
-                case (5):
+                case (1) -> {
+                    result = sum / Double.parseDouble(ValueDollarForCalculate);
+                    forFavorite = number + "rub = " + result + "$";
+                }
+                case (2) -> {
+                    result = Double.parseDouble(ValueDollarForCalculate) * sum;
+                    forFavorite = number + "$ = " + result + "rub";
+                }
+                case (3) -> {
+                    result = sum / Double.parseDouble(ValueEuroForCalculate);
+                    forFavorite = number + "rub = " + result + "euro";
+                }
+                case (4) -> {
+                    result = Double.parseDouble(ValueEuroForCalculate) * sum;
+                    forFavorite = number + "euro = " + result + "rub";
+                }
+                case (5) -> {
                     System.out.println("Избранное:");
                     BufferedReader reader = null;
                     try {
@@ -99,15 +98,13 @@ public class Main {
                             e.printStackTrace();
                         }
                     }
-                    break;
-                default:
-                    System.out.println("Mistake!!! It was necessary to enter a number from 1 to 4!!!");
-                    break;
+                }
+                default -> System.out.println("Mistake!!! It was necessary to enter a number from 1 to 4!!!");
             }
 
             if (number != 5) {
-                if (Result != 0) {
-                    System.out.println("Currency conversion was successful!!! Result = " + Result);
+                if (result != 0) {
+                    System.out.println("Currency conversion was successful!!! Result = " + result);
                     System.out.println("would you like to add the operation to your favorites?(yes?)");
                     String answer = scanner.next().trim();
                     if (answer.equalsIgnoreCase("yes")) {
