@@ -1,134 +1,275 @@
 package ru.krista;
 
-import java.io.*;
-import java.util.Scanner;
+import org.jsoup.Jsoup;
+
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Stream;
 
 
-public class Main {
+public class Main implements CurrencyExchange {
+    public static ArrayList<String> arrayList;
+
+    public static Path getFilePath() {
+        return filePath;
+    }
+
+    private static String path = "src/main/resources/favorites.txt";
+    private static Path filePath = Paths.get(path);
+    public static int value;
 
     public static void main(String[] args) {
-        String filePath = "src/main/resources/favorites.txt";
-        System.out.println("Курс валют:");
-        Dollar.parseDollarValue();
-        Euro.parseEuroValue();
-
-        String ValueDollarForCalculate = "" + Dollar.getDollarsValue();
-        String ValueEuroForCalculate = "" + Euro.getEuroValue();
-
-        Scanner scanner = new Scanner(System.in);
-
-        Byte number;
-
-        double sum = 0.0;
-
-        double result;
-
+        Main main = new Main();
         while (true) {
-            result = 0;
-
             System.out.println("""
-                                    
-                    choose:
-                        0)finish the program
-                    	1)convert rubles in dollars
-                    	2)convert dollars in rubles
-                    	3)convert rub in euro
-                    	4)convert euro in rubles
-                    	5)open the list of favorite operations""");
-
-            try {
-                number = scanner.nextByte();
-            } catch (Exception e) {
-                System.out.println("Mistake!!! The requested data was probably entered!!! number assigned the value 0");
-                number = 0;
-            }
+                                        
+                    ГЛАВНОЕ МЕНЮ
+                    Выберите вариант, указав цифру:
+                        0) Выход из программы
+                        1) Конвертация валют
+                        2) История запросов и значений конвертации""");
+            int number = enterNumber();
             if (number == 0) {
+                System.out.println("Завершение работы приложения".toUpperCase());
                 break;
             }
+            switch (number) {
+                case 1 -> {
+                    String convertation = enterOfString();
 
-            if (number != 5) {
-                System.out.println("\nEnter the amount to transfer( 0 - finish the program): ");
-                try {
-                    sum = scanner.nextDouble();
-                } catch (Exception e) {
-                    System.out.println("Mistake!!! The requested data was probably entered!!! Sum assigned the value 0");
-                    sum = 0;
+                    if (convertation.equals("0")) break;
+
+                    String[] str = convertation.split(" ");
+
+
+                    Currency base = Currency.valueOf(str[1]);//устанавливаем базовую валюту
+                    value = Integer.valueOf(str[0]);//устанавливаем значение базовой валюты, которое хотим посчитать в других валютах
+                    System.out.println();
+
+                    for (int i = 0; i < 3; i++) {//удаляем число, rub, to
+                        convertation = convertation.replace(str[i], "");
+                    }
+
+                    convertation = convertation.trim();//удаляем лишние пробелы в начале и в конце
+                    str = convertation.split(" ");
+
+                    try {
+                        HashMap<Currency, Double> currenciesHashMap = main.getCurrencyRates(base, Arrays.stream(str).map(Currency::valueOf).toArray(Currency[]::new));//с помощью потоков преобразуем стринговые выражение в Currency, потому что их может быть несколько
+                        System.out.println("Желаете добавить в избранное?\n" + "1)Да\n" + "2)Нет\n");
+                        int enterAction = enterNumber();
+                        if (enterAction == 1) {
+                            FileWriter fw = new FileWriter(path, true);
+                            for (Map.Entry<Currency, Double> entry : currenciesHashMap.entrySet()) {
+                                fw.write(value + " " + base.name() + " TO " + entry.getKey() + " = " + entry.getValue() + "\n");
+                            }
+                            fw.close();
+                            System.out.println("Данные успешно добавлены".toUpperCase());
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Ошибка!!!" + e.getMessage());
+                    }
+                    break;
                 }
+                case 2 -> {
 
-                if (sum == 0) {
+                    printFromFile(getFilePath());
+
+                    System.out.println("""
+                            Желаете редактировать избранные валюты?
+                            1)Да
+                            2)Нет""");
+                    int enterAction = enterNumber();
+                    switch (enterAction) {
+                        case 1 -> {
+                            arrayList = getFromFile(getFilePath());
+                            editing(arrayList);
+                            break;
+                        }
+                        case 2 -> {
+                            System.out.println("Выход в главное меню".toUpperCase());
+                            break;
+                        }
+                        default -> {
+                            System.out.println("Некорректный ввод!!!");
+                            break;
+                        }
+                    }
+                    break;
+                }
+                default -> {
+                    System.out.println("Некорректный ввод!!!");
                     break;
                 }
             }
-            String forFavorite = "";
+        }
+    }
 
-            switch (number) {
-                case (1) -> {
-                    result = sum / Double.parseDouble(ValueDollarForCalculate);
-                    forFavorite = number + "rub = " + result + "$";
-                }
-                case (2) -> {
-                    result = Double.parseDouble(ValueDollarForCalculate) * sum;
-                    forFavorite = number + "$ = " + result + "rub";
-                }
-                case (3) -> {
-                    result = sum / Double.parseDouble(ValueEuroForCalculate);
-                    forFavorite = number + "rub = " + result + "euro";
-                }
-                case (4) -> {
-                    result = Double.parseDouble(ValueEuroForCalculate) * sum;
-                    forFavorite = number + "euro = " + result + "rub";
-                }
-                case (5) -> {
-                    System.out.println("Избранное:");
-                    BufferedReader reader = null;
-                    try {
-                        reader = new BufferedReader(new FileReader(filePath));
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            System.out.println(line);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            if (reader != null) {
-                                reader.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                default -> System.out.println("Mistake!!! It was necessary to enter a number from 1 to 4!!!");
-            }
-
-            if (number != 5) {
-                if (result != 0) {
-                    System.out.println("Currency conversion was successful!!! Result = " + result);
-                    System.out.println("would you like to add the operation to your favorites?(yes?)");
-                    String answer = scanner.next().trim();
-                    if (answer.equalsIgnoreCase("yes")) {
-                        try {
-
-                            FileWriter writer = new FileWriter(filePath, true);
-                            BufferedWriter bufferWriter = new BufferedWriter(writer);
-                            bufferWriter.newLine();
-                            bufferWriter.write(forFavorite);
-                            bufferWriter.close();
-                            System.out.println("The addition was successful!");
-                            System.out.println("The expression that was added: " + forFavorite);
-                        } catch (IOException e) {
-                            System.out.println("Ошибка при записи в файл: " + e.getMessage());
-                        }
-                    }
-                } else {
-                    System.out.println("The conversion did not happen!!!");
+    public HashMap<Currency, Double> getCurrencyRates(Currency base, Currency... symbols) {
+        HashMap<Currency, Double> currencyRelations = new HashMap<>();
+        {
+            for (Currency symbol : symbols) {
+                try {
+                    System.out.println("Выполнение ковертации(" + base.name() + " TO " + symbol.name() + ")...");
+                    double dblValue;
+                    var document = Jsoup.connect("https://yandex.ru/search/?text=" + base.name() + "+to+" + symbol.name()).get();
+                    var selector = document.selectFirst("#a11y-search-result-converter > div.Converter-Inputs > div:nth-child(3) > span.Textinput.ConverterTextinput > input");
+                    dblValue = Double.valueOf(selector.attr("value").replace(",", "."));
+                    dblValue = Math.round(value * dblValue * 100.0) / 100.0;
+                    System.out.println(value + "\"" + base.name() + "\"" + " = " + dblValue + "\"" + symbol.name() + "\"");
+                    currencyRelations.put(symbol, dblValue);
+                } catch (Exception e) {
+                    System.err.println("Произошла ошибка." + "\nНазвание ошибки: " + e.getMessage());
                 }
             }
         }
+        return currencyRelations;
+    }
 
+    public static int enterNumber() {
+        var enter = new Scanner(System.in);
+        try {
+            int num = enter.nextInt();
+            return num;
+        } catch (Exception e) {
+            System.err.println("Ошибка: " + e.getMessage() + "\nПопробуйте ввести ещё раз!!!");
+            return enterNumber();
+        }
+    }
+
+    public static int enterNumberForDelete() {
+        var enter = new Scanner(System.in);
+        try {
+            Exception e = new Exception();
+            int num = enter.nextInt();
+            if (num < 0 || num > arrayList.size()) throw e;
+            return (num);
+        } catch (Exception e) {
+            System.err.println("Ошибка: " + e.getMessage() + "\nПопробуйте ввести ещё раз!!!");
+            return enterNumberForDelete();
+        }
+    }
+
+    public static String enterOfString() {
+        var enter = new Scanner(System.in);
+        System.out.print("""
+                Введите выражения в правильной последовательности через пробел:
+                    1)Указываем сумму
+                    2)Указываем код базовой валюты(из которой будет производиться перевод), а после пишем \"to\"
+                    3)Указываем код(коды через пробел) валюты(валют), в которую(которые) будет переводиться базовая валюта
+                Пример: 300 rub to usd eur
+                Введите своё выражение(0 - отмена):""" + " ");
+        try {
+            Exception e = new Exception();
+            String str = enter.nextLine().trim().toUpperCase();
+            if (str.equals("0")) {
+                return "0";
+            } else if (str.split(" ").length < 4) {
+                throw e;
+            }
+            return str;
+        } catch (Exception e) {
+            System.err.println("Ошибка при вводе данных!!!" + e.getMessage() + "\n");
+            System.out.println();//Для вывода последующего sout, иначе из-за serr не выведется
+            return enterOfString();
+        }
+    }
+
+    public static void printFromFile(Path filePath) {
+
+        System.out.println("Валюты и их значения, добавленные в избранное:".toUpperCase());
+        try (Stream<String> stream = Files.lines(filePath)) {
+            stream.forEach(System.out::println);
+        } catch (Exception e) {
+            System.err.println("Ошибка при работе с файлом!!!" + e.getMessage());
+        }
+    }
+
+    public static ArrayList<String> getFromFile(Path filePath) {
+        ArrayList<String> lines = new ArrayList<>();
+        try (Stream<String> stream = Files.lines(filePath)) {
+            stream.forEach(x -> lines.add(x));
+        } catch (Exception e) {
+            System.err.println("Ошибка при работе с файлом!!!" + e.getMessage());
+        }
+        return lines;
+    }
+
+    public static void printArrayList(ArrayList<String> arrayList) {
+        int i = 1;
+        for (var elem : arrayList) {
+            System.out.println(i + ")" + elem);
+            i++;
+        }
+    }
+
+    public static void editing(ArrayList<String> arrayList) {
+        while (true) {
+            System.out.println("""
+                    Выберите действие: 
+                    0)Выход
+                    1)Удалить запись""");
+            int number = enterNumber();
+
+            if (number == 0) {
+                System.out.println("Завершение работы редактирования...".toUpperCase());
+                System.out.println("""
+                        Желаете сохранить изменения?
+                        1)Да
+                        2)Нет""");
+                int action = enterNumber();
+                switch (action) {
+                    case 1 -> {
+                        System.out.println("Сохранение файла...".toUpperCase());
+                        try {
+                            FileWriter fw = new FileWriter(path, false);
+                            for (var x : arrayList) {
+                                fw.write(x + "\n");
+                            }
+                            fw.close();
+                        } catch (Exception e) {
+                            System.err.println(e.getMessage());
+                        }
+
+                        break;
+                    }
+                    case 2 -> {
+                        break;
+                    }
+                    default -> {
+                        System.out.println("Некорректный ввод!!!");
+                        printArrayList(arrayList);
+                        editing(arrayList);
+                        break;
+                    }
+                }
+                break;
+            }
+            switch (number) {
+                case 1 -> {
+                    System.out.println("Удаление записи:".toUpperCase() + "\nВыберите строку для удаления(0 - отмена):");
+                    printArrayList(arrayList);
+                    int lineForDelete = enterNumberForDelete();
+                    if (lineForDelete == 0) {
+                        break;
+                    } else lineForDelete--;
+                    try {
+                        arrayList.remove(lineForDelete);
+                        printArrayList(arrayList);
+                    } catch (Exception e) {
+                        System.err.println("Ошибка: " + e.getMessage());
+                    }
+                    break;
+                }
+                default -> {
+                    System.out.println("Что-то пошло не так!!!");
+                    break;
+                }
+            }
+        }
     }
 
 
 }
-
