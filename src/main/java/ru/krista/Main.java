@@ -10,19 +10,27 @@ import java.util.*;
 import java.util.stream.Stream;
 
 
-public class Main implements CurrencyExchange {
+//TODO: Так делать нельзя, теряется весь смысл в конкретном случае. Не бойтесь создавать дополнительные классы и файлы
+//public class Main implements CurrencyExchange
+
+public class Main {
+    
+    //TODO: в Main классе этого быть не должно. Но в соответствии с другими комментариями отсюда это пропадёт
     public static ArrayList<String> arrayList;
 
+    //TODO: Про это уже обсудили, см переписку
     public static Path getFilePath() {
         return filePath;
     }
 
     private static String path = "src/main/resources/favorites.txt";
     private static Path filePath = Paths.get(path);
+
+    //TODO: Почему? Зачем?
     public static int value;
 
     public static void main(String[] args) {
-        Main main = new Main();
+        Main main = new Main(); // TODO: соответственно и это не надо делать
         while (true) {
             System.out.println("""
                                         
@@ -38,6 +46,7 @@ public class Main implements CurrencyExchange {
             }
             switch (number) {
                 case 1 -> {
+                    //TODO: Логику парсинга и преобразования строки тоже вынести в отдельный метод\класс
                     String convertation = enterOfString();
 
                     if (convertation.equals("0")) break;
@@ -57,7 +66,9 @@ public class Main implements CurrencyExchange {
                     str = convertation.split(" ");
 
                     try {
+                        //TODO: Используем интерфейс Map в качестве типа объекта, а не частную реализацию
                         HashMap<Currency, Double> currenciesHashMap = main.getCurrencyRates(base, Arrays.stream(str).map(Currency::valueOf).toArray(Currency[]::new));//с помощью потоков преобразуем стринговые выражение в Currency, потому что их может быть несколько
+                        //TODO: Тоже вынести куда-нибудь отдельно в метод\класс
                         System.out.println("Желаете добавить в избранное?\n" + "1)Да\n" + "2)Нет\n");
                         int enterAction = enterNumber();
                         if (enterAction == 1) {
@@ -71,7 +82,7 @@ public class Main implements CurrencyExchange {
                     } catch (Exception e) {
                         System.err.println("Ошибка!!!" + e.getMessage());
                     }
-                    break;
+                    break;//TODO: лишнее, даже идея подсказывает, что можно удалить
                 }
                 case 2 -> {
 
@@ -86,27 +97,29 @@ public class Main implements CurrencyExchange {
                         case 1 -> {
                             arrayList = getFromFile(getFilePath());
                             editing(arrayList);
-                            break;
+                            break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                         }
                         case 2 -> {
                             System.out.println("Выход в главное меню".toUpperCase());
-                            break;
+                            break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                         }
                         default -> {
                             System.out.println("Некорректный ввод!!!");
-                            break;
+                            break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                         }
                     }
-                    break;
+                    break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                 }
                 default -> {
                     System.out.println("Некорректный ввод!!!");
-                    break;
+                    break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                 }
             }
         }
     }
 
+    //TODO: Соответственно это вынести в реализацию интерфейса CurrencyExchange. Класс, реализующий этот интерфейс можно
+    //      назвать, к примеру, CurrencyExchangeJsoup
     public HashMap<Currency, Double> getCurrencyRates(Currency base, Currency... symbols) {
         HashMap<Currency, Double> currencyRelations = new HashMap<>();
         {
@@ -130,26 +143,31 @@ public class Main implements CurrencyExchange {
 
     public static int enterNumber() {
         var enter = new Scanner(System.in);
-        try {
-            int num = enter.nextInt();
-            return num;
-        } catch (Exception e) {
-            System.err.println("Ошибка: " + e.getMessage() + "\nПопробуйте ввести ещё раз!!!");
-            return enterNumber();
-        }
+//        TODO: так нельзя делать. Можно использовать условный оператор без лишнего выкидывания Исключения,
+//              которое лишь усложняет код
+//        try {
+//            int num = enter.nextInt();
+//            return num;
+//        } catch (Exception e) {
+//            System.err.println("Ошибка: " + e.getMessage() + "\nПопробуйте ввести ещё раз!!!");
+//            return enterNumber();
+//        }
     }
 
+    //TODO: В чём принципиальная разница и отличие от метода enterNumber?
     public static int enterNumberForDelete() {
         var enter = new Scanner(System.in);
-        try {
-            Exception e = new Exception();
-            int num = enter.nextInt();
-            if (num < 0 || num > arrayList.size()) throw e;
-            return (num);
-        } catch (Exception e) {
-            System.err.println("Ошибка: " + e.getMessage() + "\nПопробуйте ввести ещё раз!!!");
-            return enterNumberForDelete();
-        }
+//        TODO: так нельзя делать. Можно использовать условный оператор без лишнего выкидывания Исключения,
+//              которое лишь усложняет код
+//        try {
+//            Exception e = new Exception();
+//            int num = enter.nextInt();
+//            if (num < 0 || num > arrayList.size()) throw e;
+//            return (num);
+//        } catch (Exception e) {
+//            System.err.println("Ошибка: " + e.getMessage() + "\nПопробуйте ввести ещё раз!!!");
+//            return enterNumberForDelete();
+//        }
     }
 
     public static String enterOfString() {
@@ -157,26 +175,30 @@ public class Main implements CurrencyExchange {
         System.out.print("""
                 Введите выражения в правильной последовательности через пробел:
                     1)Указываем сумму
-                    2)Указываем код базовой валюты(из которой будет производиться перевод), а после пишем \"to\"
+                    2)Указываем код базовой валюты(из которой будет производиться перевод), а после пишем "to"
                     3)Указываем код(коды через пробел) валюты(валют), в которую(которые) будет переводиться базовая валюта
                 Пример: 300 rub to usd eur
                 Введите своё выражение(0 - отмена):""" + " ");
-        try {
-            Exception e = new Exception();
-            String str = enter.nextLine().trim().toUpperCase();
-            if (str.equals("0")) {
-                return "0";
-            } else if (str.split(" ").length < 4) {
-                throw e;
-            }
-            return str;
-        } catch (Exception e) {
-            System.err.println("Ошибка при вводе данных!!!" + e.getMessage() + "\n");
-            System.out.println();//Для вывода последующего sout, иначе из-за serr не выведется
-            return enterOfString();
-        }
+//        TODO: так нельзя делать. Можно использовать условный оператор без лишнего выкидывания Исключения,
+//              которое лишь усложняет код
+//        try {
+//            Exception e = new Exception();
+//            String str = enter.nextLine().trim().toUpperCase();
+//            if (str.equals("0")) {
+//                return "0";
+//            } else if (str.split(" ").length < 4) {
+//                throw e;
+//            }
+//            return str;
+//        } catch (Exception e) {
+//            System.err.println("Ошибка при вводе данных!!!" + e.getMessage() + "\n");
+//            System.out.println();//Для вывода последующего sout, иначе из-за serr не выведется
+//            return enterOfString();
+//        }
     }
 
+
+    //TODO: Всю работу с файлами вынести в отдельную сущность. Не надо городить статические методы
     public static void printFromFile(Path filePath) {
 
         System.out.println("Валюты и их значения, добавленные в избранное:".toUpperCase());
@@ -187,6 +209,7 @@ public class Main implements CurrencyExchange {
         }
     }
 
+    //TODO: Всю работу с файлами вынести в отдельную сущность. Не надо городить статические методы
     public static ArrayList<String> getFromFile(Path filePath) {
         ArrayList<String> lines = new ArrayList<>();
         try (Stream<String> stream = Files.lines(filePath)) {
@@ -205,16 +228,19 @@ public class Main implements CurrencyExchange {
         }
     }
 
+    //TODO: Всю работу с файлами вынести в отдельную сущность. Не надо городить статические методы
     public static void editing(ArrayList<String> arrayList) {
         while (true) {
             System.out.println("""
-                    Выберите действие: 
+                    Выберите действие:
                     0)Выход
                     1)Удалить запись""");
             int number = enterNumber();
 
+            //TODO: почему для выбора действия сначала используется условный оператор if, а потом для 1 пункта
+            //      используется switch. Определиться и выбрать что-то одно
             if (number == 0) {
-                System.out.println("Завершение работы редактирования...".toUpperCase());
+                System.out.println("Завершение работы редактирования...".toUpperCase()); //TODO: зачем toUpperCase?
                 System.out.println("""
                         Желаете сохранить изменения?
                         1)Да
@@ -222,7 +248,7 @@ public class Main implements CurrencyExchange {
                 int action = enterNumber();
                 switch (action) {
                     case 1 -> {
-                        System.out.println("Сохранение файла...".toUpperCase());
+                        System.out.println("Сохранение файла...".toUpperCase()); //TODO: зачем toUpperCase?
                         try {
                             FileWriter fw = new FileWriter(path, false);
                             for (var x : arrayList) {
@@ -233,10 +259,10 @@ public class Main implements CurrencyExchange {
                             System.err.println(e.getMessage());
                         }
 
-                        break;
+                        break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                     }
                     case 2 -> {
-                        break;
+                        break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                     }
                     default -> {
                         System.out.println("Некорректный ввод!!!");
@@ -261,11 +287,11 @@ public class Main implements CurrencyExchange {
                     } catch (Exception e) {
                         System.err.println("Ошибка: " + e.getMessage());
                     }
-                    break;
+                    break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                 }
                 default -> {
                     System.out.println("Что-то пошло не так!!!");
-                    break;
+                    break; //TODO: лишнее, даже идея подсказывает, что можно удалить
                 }
             }
         }
