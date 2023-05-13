@@ -18,50 +18,53 @@ public class Main {
         CurrencyExchangeJsoup cej = new CurrencyExchangeJsoup();
         Filer filer = new Filer();
         Parser parser = new Parser();
-        while (true) {
-            System.out.println("""
-                                        
-                    ГЛАВНОЕ МЕНЮ
-                    Выберите вариант, указав цифру:
-                        0) Выход из программы
-                        1) Конвертация валют
-                        2) История запросов и значений конвертации""");
-            int number = enterNumber();
-            if (number == 0) {
-                System.out.println("Завершение работы приложения".toUpperCase());
-                break;
-            }
-            switch (number) {
-                case 1 -> {
-                    parser.parseOfCurrencies();
-                    cej.setValue(parser.value);
-                    Map<Currency, Double> currenciesHashMap = cej.getCurrencyRates(parser.base, Arrays.stream(parser.str).map(Currency::valueOf).toArray(Currency[]::new));//с помощью потоков преобразуем стринговые выражение в Currency, потому что их может быть несколько
-                    favorites.add(currenciesHashMap, parser);
+        WorkOfApplication:
+        {
+            while (true) {
+                System.out.println("""
+                                            
+                        ГЛАВНОЕ МЕНЮ
+                        Выберите вариант, указав цифру:
+                            0) Выход из программы
+                            1) Конвертация валют
+                            2) История запросов и значений конвертации""");
+                int number = enterNumber();
+                switch (number) {
+                    case 0 -> {
+                        System.out.println("Завершение работы приложения".toUpperCase());
+                        break WorkOfApplication;
+                    }
+                    case 1 -> {
+                        parser.parseOfCurrencies();
+                        cej.setValue(parser.value);
+                        Map<Currency, Double> currenciesHashMap = cej.getCurrencyRates(parser.base, Arrays.stream(parser.str).map(Currency::valueOf).toArray(Currency[]::new));//с помощью потоков преобразуем стринговые выражение в Currency, потому что их может быть несколько
+                        favorites.add(currenciesHashMap, parser);
 
-                }
-                case 2 -> {
+                    }
+                    case 2 -> {
 
-                    filer.printFromFile(getFilePath());
+                        filer.printFromFile(getFilePath());
 
-                    System.out.println("""
-                            Желаете редактировать избранные валюты?
-                            1)Да
-                            2)Нет""");
-                    int enterAction = enterNumber();
-                    switch (enterAction) {
-                        case 1 -> {
-                            filer.corrected();
-                        }
-                        case 2 -> {
-                            System.out.println("Выход в главное меню".toUpperCase());
-                        }
-                        default -> {
-                            System.out.println("Некорректный ввод!!!");
+                        System.out.println("""
+                                Желаете редактировать избранные валюты?
+                                1)Да
+                                2)Нет""");
+                        int enterAction = enterNumber();
+                        switch (enterAction) {
+                            case 1 -> {
+                                filer.corrected();
+                            }
+                            case 2 -> {
+                                System.out.println("Выход в главное меню".toUpperCase());
+                            }
+                            default -> {
+                                System.out.println("Некорректный ввод!!!");
+                            }
                         }
                     }
-                }
-                default -> {
-                    System.out.println("Некорректный ввод!!!");
+                    default -> {
+                        System.out.println("Некорректный ввод!!!");
+                    }
                 }
             }
         }
