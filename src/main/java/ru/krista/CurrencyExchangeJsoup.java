@@ -3,15 +3,20 @@ package ru.krista;
 import org.jsoup.Jsoup;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class CurrencyExchangeJsoup implements CurrencyExchange{
-    private double value = 0;
+    //TODO: ненужная инициализация значением переменной
+    private double value;
     CurrencyExchangeJsoup(double value){
         this.value = value;
     }
 
-    public HashMap<Currency, Double> getCurrencyRates(Currency base, Currency... symbols) {
-        HashMap<Currency, Double> currencyRelations = new HashMap<>();
+    //TODO: метод должен возвращать не конкретную реализацию HashMap, а интерфейс Map, как и описано в интерфейсе CurrencyExchange
+    public Map<Currency, Double> getCurrencyRates(Currency base, Currency... symbols) {
+        //TODO: здесь соответственно так же не HashMap<Currency, Double> currencyRelations = new HashMap<>();
+        //      а Map<Currency, Double> currencyRelations = new HashMap<>();
+        Map<Currency, Double> currencyRelations = new HashMap<>();
         {
             for (Currency symbol : symbols) {
                 try {

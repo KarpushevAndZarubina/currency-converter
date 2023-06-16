@@ -15,8 +15,6 @@ public class Main {
 
     public static void main(String[] args) {
         AdditionToFavorites favorites = new AdditionToFavorites();
-
-        var temporary = new Temporary();
         Filer filer = new Filer();
         Parser parser = new Parser();
         WorkOfApplication:
@@ -37,7 +35,6 @@ public class Main {
                     }
                     case 1 -> {
                         parser.parseOfCurrencies();
-                        temporary.setValue(parser.value);
                         CurrencyExchange cej = new CurrencyExchangeJsoup(parser.value);
                         Map<Currency, Double> currenciesHashMap = cej.getCurrencyRates(parser.base, Arrays.stream(parser.str).map(Currency::valueOf).toArray(Currency[]::new));//с помощью потоков преобразуем стринговые выражение в Currency, потому что их может быть несколько
                         favorites.add(currenciesHashMap, parser);

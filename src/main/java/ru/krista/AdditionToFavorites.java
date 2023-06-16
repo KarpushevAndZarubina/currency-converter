@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class AdditionToFavorites {
-    public ArrayList<String> arrayList;
 
     public void add(Map<Currency, Double> currenciesHashMap, Parser parser) {
         try {
